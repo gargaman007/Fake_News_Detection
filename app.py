@@ -9,6 +9,11 @@ from sklearn.linear_model import LogisticRegression
 
 app = Flask(__name__)
 
+import nltk
+nltk.download('punkt')
+nltk.download('stopwords')
+
+
 # Load CountVectorizer and TfidfTransformer
 with open('count_vectorizer.pkl', 'rb') as file:
     count_vectorizer = pickle.load(file)
