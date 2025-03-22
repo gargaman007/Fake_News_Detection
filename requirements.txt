@@ -2,4 +2,4 @@ Flask
 gunicorn
 nltk
 scikit-learn
-pickle
+pickle-mixin
