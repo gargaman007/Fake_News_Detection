@@ -9,24 +9,20 @@ from sklearn.linear_model import LogisticRegression
 
 app = Flask(__name__)
 import os
+import nltk
 
-# Ensure NLTK downloads go to the right directory
-nltk_data_path = "/opt/render/project/src/nltk_data"
-os.makedirs(nltk_data_path, exist_ok=True)  # Create directory if not exists
-nltk.data.path.append(nltk_data_path)
+# Define a directory for storing NLTK data
+NLTK_DIR = "/opt/render/project/src/nltk_data"
 
-# Download required NLTK resources if not available
-try:
-    nltk.data.find("tokenizers/punkt")
-except LookupError:
-    nltk.download("punkt", download_dir=nltk_data_path)
+# Create the directory if it doesn't exist
+os.makedirs(NLTK_DIR, exist_ok=True)
 
-try:
-    nltk.data.find("corpora/stopwords")
-except LookupError:
-    nltk.download("stopwords", download_dir=nltk_data_path)
+# Add the directory to NLTK's search path
+nltk.data.path.append(NLTK_DIR)
 
-
+# Download required resources
+nltk.download('punkt', download_dir=NLTK_DIR)
+nltk.download('stopwords', download_dir=NLTK_DIR)
 
 # Load CountVectorizer and TfidfTransformer
 with open('count_vectorizer.pkl', 'rb') as file:
