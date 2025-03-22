@@ -3,26 +3,12 @@ import string
 
 import nltk
 from flask import Flask, render_template, request
-from nltk.corpus import stopwords
+import string
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.linear_model import LogisticRegression
 
 app = Flask(__name__)
-import os
-import nltk
 
-# Define a directory for storing NLTK data
-NLTK_DIR = "/opt/render/project/src/nltk_data"
-
-# Create the directory if it doesn't exist
-os.makedirs(NLTK_DIR, exist_ok=True)
-
-# Add the directory to NLTK's search path
-nltk.data.path.append(NLTK_DIR)
-
-# Download required resources
-nltk.download('punkt', download_dir=NLTK_DIR)
-nltk.download('stopwords', download_dir=NLTK_DIR)
 
 # Load CountVectorizer and TfidfTransformer
 with open('count_vectorizer.pkl', 'rb') as file:
@@ -35,27 +21,39 @@ with open('tfidf_transformer.pkl', 'rb') as file:
 with open('logistic_regression_model.pkl', 'rb') as file:
     logistic_regression_model = pickle.load(file)
 
+
+
+# Define a basic set of English stopwords manually
+STOPWORDS = {
+    "a", "an", "the", "is", "are", "was", "were", "am", "be", "been", "being", "i", "me", "my", 
+    "myself", "we", "our", "ours", "ourselves", "you", "your", "yours", "yourself", "yourselves", 
+    "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", 
+    "them", "their", "theirs", "themselves", "what", "which", "who", "whom", "this", "that", 
+    "these", "those", "and", "but", "if", "or", "because", "as", "until", "while", "of", "at", 
+    "by", "for", "with", "about", "against", "between", "into", "through", "during", "before", 
+    "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off", "over", 
+    "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", 
+    "all", "any", "both", "each", "few", "more", "most", "other", "some", "such", "no", "nor", 
+    "not", "only", "own", "same", "so", "than", "too", "very", "s", "t", "can", "will", "just", 
+    "don", "should", "now"
+}
+
 # Function to remove punctuation
 def remove_punc(text):
-    new_text = [x for x in text if x not in string.punctuation]
-    new_text = ''.join(new_text)
-    return new_text
+    return ''.join(char for char in text if char not in string.punctuation)
 
-# Function to remove stopwords
+# Function to remove stopwords manually
 def remove_stopwords(text):
-    stop_words = set(stopwords.words('english'))
-    words = nltk.word_tokenize(text)
-    filtered_words = [word for word in words if word.lower() not in stop_words]
-    filtered_words = ' '.join(filtered_words)
-    return filtered_words
+    words = text.split()  # Manual tokenization (split by spaces)
+    filtered_words = [word for word in words if word.lower() not in STOPWORDS]
+    return ' '.join(filtered_words)
 
 # Preprocess text data
 def preprocess_text(text):
-    # Remove punctuation
-    text = remove_punc(text)
-    # Remove stopwords
-    text = remove_stopwords(text)
+    text = remove_punc(text)  # Remove punctuation
+    text = remove_stopwords(text)  # Remove stopwords
     return text
+
 
 @app.route('/')
 def index():
